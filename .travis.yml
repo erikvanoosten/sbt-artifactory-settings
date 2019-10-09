@@ -1,0 +1,42 @@
+dist: bionic
+
+language: scala
+
+scala:
+  - "2.12.10"
+
+jdk: oraclejdk8
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
+    - $HOME/.sbt/launchers
+
+before_cache:
+  # Cleanup the cached directories to avoid unnecessary cache updates
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt        -name "*.lock"               -delete
+
+install:
+  - git fetch --tags
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION scalastyle coverage test coverageReport scripted
+
+after_success:
+  # scalatest generates XHTML files, but fails to escape an ampersand
+  - sed -e 's!bitSet & mask!bitSet \&amp; mask!' -i $(find . -path \*/build/reports/tests/\* -name index.html)
+  - reports-publisher
+
+after_failure:
+  # scalatest generates XHTML files, but fails to escape an ampersand
+  - sed -e 's!bitSet & mask!bitSet \&amp; mask!' -i $(find . -path \*/build/reports/tests/\* -name index.html)
+  - reports-publisher
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: sbt ++$TRAVIS_SCALA_VERSION coverageOff publish tricklerdownerPublish
+    on:
+      all_branches: true
