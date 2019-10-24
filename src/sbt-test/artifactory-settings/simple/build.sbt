@@ -39,7 +39,7 @@ lazy val root = (project in file("."))
 
       "The JVM resolvers" should "be defined" in {
         artifactoryJvmReleasesResolver.value shouldBe "https://host.com/path/libs-release/"
-        artifactoryJvmSnapshotsResolver.value shouldBe "https://host.com/path/libs-snapshot;build.timestamp=1570434693212/"
+        artifactoryJvmSnapshotsResolver.value shouldBe "https://host.com/path/libs-snapshot/"
         artifactoryJvmReleasesPublishResolver.value shouldBe "https://host.com/path/libs-release-local/"
         artifactoryJvmSnapshotsPublishResolver.value shouldBe "https://host.com/path/libs-snapshot-local;build.timestamp=1570434693212/"
       }
@@ -57,10 +57,10 @@ lazy val root = (project in file("."))
 
       "The resolvers" should "be configured" in {
         resolvers.value shouldBe Seq(
+          Resolver.mavenLocal,
           "Artifactory Release Libs" at "https://host.com/path/libs-release/",
-          "Artifactory Snapshot Libs" at "https://host.com/path/libs-snapshot;build.timestamp=1570434693212/",
-          Resolver.jcenterRepo,
-          Resolver.mavenLocal
+          "Artifactory Snapshot Libs" at "https://host.com/path/libs-snapshot/",
+          Resolver.jcenterRepo
         )
       }
 

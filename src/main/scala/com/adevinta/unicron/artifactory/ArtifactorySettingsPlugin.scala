@@ -53,18 +53,17 @@ object ArtifactorySettingsPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Setting[_]] = Seq(
     artifactoryJvmReleasesResolver := s"${artifactoryContext.value}/libs-release/",
-    artifactoryJvmSnapshotsResolver := s"${artifactoryContext.value}/libs-snapshot${artifactoryBuildTimestampSuffix.value}/",
+    artifactoryJvmSnapshotsResolver := s"${artifactoryContext.value}/libs-snapshot/",
     artifactoryJvmReleasesPublishResolver := s"${artifactoryContext.value}/libs-release-local/",
     artifactoryJvmSnapshotsPublishResolver := s"${artifactoryContext.value}/libs-snapshot-local${artifactoryBuildTimestampSuffix.value}/",
 
     artifactoryJvmResolvers := {
       Seq(
+        if (isSnapshot.value) Some(Resolver.mavenLocal) else None,
         Some("Artifactory Release Libs" at artifactoryJvmReleasesResolver.value),
-        if (isSnapshot.value) Some("Artifactory Snapshot Libs" at artifactoryJvmSnapshotsResolver.value) else None
-      ).flatten ++ Seq(
-        Resolver.jcenterRepo,
-        Resolver.mavenLocal
-      )
+        if (isSnapshot.value) Some("Artifactory Snapshot Libs" at artifactoryJvmSnapshotsResolver.value) else None,
+        Some(Resolver.jcenterRepo)
+      ).flatten
     },
 
     artifactoryJvmPublishResolver := {
