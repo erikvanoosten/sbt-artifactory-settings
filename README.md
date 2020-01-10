@@ -40,9 +40,16 @@ You'll need to configure `project/plugins.sbt` and `build.sbt` as shown below:
  from artifactory, you will need to load some configuration from the environment variables like:
 
 ```scala
-val artifactoryContext = System.getenv("ARTIFACTORY_CONTEXT")
-val artifactoryUser = System.getenv("ARTIFACTORY_USER")
-val artifactoryPass = System.getenv("ARTIFACTORY_PWD")
+def getEnv(env: String): String = {
+  sys.env.getOrElse(env, {
+    println(s"Error: Please define the environment variable $env")
+    println("       More info at: https://github.mpi-internal.com/unicron/sbt-artifactory-settings")
+    sys.exit(-1)
+  })
+}
+val artifactoryContext = getEnv("ARTIFACTORY_CONTEXT")
+val artifactoryUser = getEnv("ARTIFACTORY_USER")
+val artifactoryPass = getEnv("ARTIFACTORY_PWD")
 resolvers += "Artifactory Release Plugins" at s"$artifactoryContext/libs-release"
 credentials += Credentials("Artifactory Realm", new URL(artifactoryContext).getAuthority, artifactoryUser, artifactoryPass)
 addSbtPlugin("com.adevinta.unicron" % "sbt-artifactory-settings" % "<version>")
