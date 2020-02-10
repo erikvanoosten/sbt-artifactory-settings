@@ -1,6 +1,6 @@
 # sbt-artifactory-settings
 
-SBT plugin to manage Artifactory configuration for Spark jobs
+SBT plugin to manage Artifactory configuration for Unicron
 
 ## Getting started
 

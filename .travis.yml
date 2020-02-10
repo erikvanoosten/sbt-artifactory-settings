@@ -40,3 +40,14 @@ deploy:
     script: sbt ++$TRAVIS_SCALA_VERSION coverageOff publish tricklerdownerPublish
     on:
       all_branches: true
+  - provider: script
+    skip_cleanup: true
+    script: sbt ++$TRAVIS_SCALA_VERSION coverageOff publish -Dpublish.repository=bintray
+    on:
+      tags: true
+
+env:
+  global:
+    # Bintray user and pass
+    - secure: "X47HP2wlolFoTWkOuaDFULSQSixIRiBoC4jJUUa7gMCIzB6FNY/TQ2MiLU/8cMsRC9YIjAruG8+1RuPNcoHu07l6vq/Zm+530CGL3w6wacrOfJMpT/NFkuCqqJpM3FFtsGAvsDV2sHBIkXng5PBV3pYq5WC0W/RxF0cvsyp2/8TCgHENmxk32AazlSomj1BD320YKYZlS1yZnc+piGQifUr+Ro/tFCvMmWMz/62ITdHrvKtkacOelJCuHcuRpFckipMFkI3JmcWBm8oIBuUc0Y7qJLy/v1tPbt83CVxaU2bP4qLufMpJRkqVuh09fr7rQv2aPt93ZZk7YBYQe0+Z7WdnyhBijdBtfle//PHIyPrHpy8AEO1gZrv4MvU5FvzMcVjYfgq2llmXxKNmlj1D2BTu8R6G8sylNojrqGHuIJDku9QVBlsQXRhsfBth3Z3gg+g1srwyu7X2N1NeMo83IVxpLQo/SGN7epGtDvv+V8c1AyKr16sem95pS5YlHBekQH3fLOtywfNZH082xsIDGlz0AdwlcxdH3tUBBPrjSjo/TMHocJLfo/49+ICpXng7EwO+qiB/nQY0Q4hcvaGAtt9kgtpQcZPrd2w2qfe/36+0REhCmwY/+a3XZNhpbPgo8aR0M/GLbNkhp6BALVi/B2ZYwXrGwBZcWY4EtsZximM="
+    - secure: "oqzUY3vXTg4H41hf2AcKcwGr7ZA6+lAS1U3d4SGSfGG5RVOYZp9WJOPKd8YfsqN602UfcA/x6ngzHmfZ3zN55HNckJx+tTMGfMV2BAXGZSr4iKKTm2VwsCounqXAJ17RFTXEeFMYMIRoOuC+Z4vvP0D4BfElcXuy2F3pKYHDi8/0voFltIJEUJ1PGrZXtL0oLWA8C5saZE4fWk6AeEpXRnHNSsYaXl9f9kda2A3QixGlJkagJEJWZmV3eeIl6lSDaQadfKCO0R7uY0xrQ3l6zW/ixqCPg2//+XMcKQREkrooBYE2LbZc5WN+18LeMsPZi2D3ZrLnkya6WyI4tx3MdYcnzyGDlgVK8SO7S2OdRGj0W728tLH39RpKFU5DPJMg0x6IV4FwdxxovF2NPnOV1Xc84l1cihdUQkk1QsneoUsAMt89d7R2sIFj1pHogYMsxF3xGkZJKFA6E9U3CmgPMo99VyCr1vf8tgYvgED3tZiivOddBW6bKyGC9B+hql34ZEumU6Kl2/jgkh88IjRhMWkntmRhv4q/eSwDjZtu41Tw8gWvW+Z6xfio2KroaCP6w+V3hoUWMtHoAV9f4ltHGkCpalpZL9ejnsimghDjCWX5spXFEeOPTXVZIzRvIA2ge2OZMpwjkCtl6uqQrWPWES13pO4JWQSooQtrleE1tPQ="
