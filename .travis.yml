@@ -3,14 +3,14 @@ dist: bionic
 language: scala
 
 scala:
-  - "2.12.10"
+  - "2.12.12"
 
-jdk: oraclejdk8
+jdk: oraclejdk11
 
 cache:
   directories:
-    - $HOME/.ivy2/cache
     - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
+    - $HOME/.ivy2/cache
     - $HOME/.sbt/launchers
 
 before_cache:
@@ -22,32 +22,30 @@ install:
   - git fetch --tags
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION scalastyle coverage test coverageReport scripted
+  - sbt ++$TRAVIS_SCALA_VERSION clean headerCheck scalastyle test:scalastyle coverage test coverageReport scripted
 
-after_success:
-  # scalatest generates XHTML files, but fails to escape an ampersand
-  - sed -e 's!bitSet & mask!bitSet \&amp; mask!' -i $(find . -path \*/build/reports/tests/\* -name index.html)
-  - reports-publisher
-
-after_failure:
-  # scalatest generates XHTML files, but fails to escape an ampersand
-  - sed -e 's!bitSet & mask!bitSet \&amp; mask!' -i $(find . -path \*/build/reports/tests/\* -name index.html)
-  - reports-publisher
+before_deploy:
+  - if [ $TRAVIS_PULL_REQUEST = 'false' ]; then
+      openssl aes-256-cbc -K $encrypted_82c15cb04022_key -iv $encrypted_82c15cb04022_iv -in secring.asc.enc -out secring.asc -d;
+      gpg --batch --import secring.asc;
+      rm secring.asc;
+    fi
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script: sbt ++$TRAVIS_SCALA_VERSION coverageOff publish tricklerdownerPublish
+    script: sbt ++$TRAVIS_SCALA_VERSION coverageOff publishSigned
     on:
+      tags: false
       all_branches: true
   - provider: script
     skip_cleanup: true
-    script: sbt ++$TRAVIS_SCALA_VERSION coverageOff publish -Dpublish.repository=bintray
+    script: sbt ++$TRAVIS_SCALA_VERSION coverageOff publishSigned sonatypeBundleRelease
     on:
       tags: true
 
 env:
   global:
-    # Bintray user and pass
-    - secure: "X47HP2wlolFoTWkOuaDFULSQSixIRiBoC4jJUUa7gMCIzB6FNY/TQ2MiLU/8cMsRC9YIjAruG8+1RuPNcoHu07l6vq/Zm+530CGL3w6wacrOfJMpT/NFkuCqqJpM3FFtsGAvsDV2sHBIkXng5PBV3pYq5WC0W/RxF0cvsyp2/8TCgHENmxk32AazlSomj1BD320YKYZlS1yZnc+piGQifUr+Ro/tFCvMmWMz/62ITdHrvKtkacOelJCuHcuRpFckipMFkI3JmcWBm8oIBuUc0Y7qJLy/v1tPbt83CVxaU2bP4qLufMpJRkqVuh09fr7rQv2aPt93ZZk7YBYQe0+Z7WdnyhBijdBtfle//PHIyPrHpy8AEO1gZrv4MvU5FvzMcVjYfgq2llmXxKNmlj1D2BTu8R6G8sylNojrqGHuIJDku9QVBlsQXRhsfBth3Z3gg+g1srwyu7X2N1NeMo83IVxpLQo/SGN7epGtDvv+V8c1AyKr16sem95pS5YlHBekQH3fLOtywfNZH082xsIDGlz0AdwlcxdH3tUBBPrjSjo/TMHocJLfo/49+ICpXng7EwO+qiB/nQY0Q4hcvaGAtt9kgtpQcZPrd2w2qfe/36+0REhCmwY/+a3XZNhpbPgo8aR0M/GLbNkhp6BALVi/B2ZYwXrGwBZcWY4EtsZximM="
-    - secure: "oqzUY3vXTg4H41hf2AcKcwGr7ZA6+lAS1U3d4SGSfGG5RVOYZp9WJOPKd8YfsqN602UfcA/x6ngzHmfZ3zN55HNckJx+tTMGfMV2BAXGZSr4iKKTm2VwsCounqXAJ17RFTXEeFMYMIRoOuC+Z4vvP0D4BfElcXuy2F3pKYHDi8/0voFltIJEUJ1PGrZXtL0oLWA8C5saZE4fWk6AeEpXRnHNSsYaXl9f9kda2A3QixGlJkagJEJWZmV3eeIl6lSDaQadfKCO0R7uY0xrQ3l6zW/ixqCPg2//+XMcKQREkrooBYE2LbZc5WN+18LeMsPZi2D3ZrLnkya6WyI4tx3MdYcnzyGDlgVK8SO7S2OdRGj0W728tLH39RpKFU5DPJMg0x6IV4FwdxxovF2NPnOV1Xc84l1cihdUQkk1QsneoUsAMt89d7R2sIFj1pHogYMsxF3xGkZJKFA6E9U3CmgPMo99VyCr1vf8tgYvgED3tZiivOddBW6bKyGC9B+hql34ZEumU6Kl2/jgkh88IjRhMWkntmRhv4q/eSwDjZtu41Tw8gWvW+Z6xfio2KroaCP6w+V3hoUWMtHoAV9f4ltHGkCpalpZL9ejnsimghDjCWX5spXFEeOPTXVZIzRvIA2ge2OZMpwjkCtl6uqQrWPWES13pO4JWQSooQtrleE1tPQ="
+    - secure: "lg0z7sTC/i0+IjePIwd1dsgZi+RiN1kxahNVlUs/6T/IIJwvWOs3Uf6CXuughaebkbcC3iIk/kLAeU+WbKV0c/syf7vxzzzMtgjTge3m3k94Hjyo+JxvRyfpZ0d6GWVpyBfLdnOlq2myPeM79naxw7nPFlP1/s/rYmuARzWsjzKckDcjxRABTf5YEsqTunGSXBnBCjmejN0Rh8qL7e5XUKfRDL6wb3B/V3/gd6fZacv58jqRq2XyiAyO0YQxIbsBCS1g+EZudeakynkco5ci3JsdrqwC7pups/pm0T3/ftst5ZXOjKBHx7I1zMtsATL71ZD0bzI7PKLooRytIK4bAVtXQmC65wKSSe9Q4DrXPixOqFcu9ZYjU8ZjfaBfuPZfTK1Da9TBkTYNq1s+KTu07I7SK3lsSpRRrC4OT4jH1q9d6PnNf71iymHGgr5rcqgKJFD5TLEP1VpYgD6iNItIaIwgZ9smm7lfRG6lpe8hK92v0U/iPNFE4AKblmcCw8QekqZrvxyTPS4B7BmammGD9UCwhb1gMxfEPIP8/cWOyPPgKKT3EPzLyzDsePPnAjLgb4bHWf2jBMaVV3sbhPtY9Gzw/Q8UJScC/sGiaQ0cXeTS3FODe2D2ZOYFNal62c+/7tfqE7KxulMZ7QPYVBySrXEo9dAIJt65hiSWuDbmBJs="
+    - secure: "hW3Q4S/kXrkBV1+DcqftP+fJQiVOfhiKmkpkPjwn8ADZibJCO/TTt1ovxPCXW4CmGNDeY2GXAUz3FQflWqIeHXclu9i46k18qjMggd7+lYXogMMHoD+YPzRRKxJ28W7i6nyxSQ4VyvaFx3qXxIOO/htuCN0dmT6rdRpfaXXCTctcFOtvrKsbcrnVmsFOgP/CyCpzoqCbviyVZ6DtZbwuSrwxn4gFcRUfgWs0eU5CSrcd1Simcsia3DAnKfQ9uTnPDhYWCc+8DYVrRyWd6tZzwoRb7BlpTx17/ppPgF6tHtznu9o2h2AO4JVtt4UKMQ62XqMyW8vfNaANLkDxLtigiAO7zMdhMi9RkRXzTV6phBGt4SJ3m19E3oesqW/Vd0vSx0XN9ZpE62W1QrDLgGIJwKgyLO9a3nX6nPiGlr0taHRrVENLODIGZ6DI9+saXPBg4O3ESld0V9+/XapNFSGtvepiQ3oT8KOyjxsg6fldXjy1OgXUPfsXQrckEbv9eAXpVAPqtR96ULzCy3kkTbjFx2gpFaqc3R5xDArRf/OnOeV1TiXByMNlbw78pX0XNb5aLTxVFqQlNxmA/lK+MWnTQYujTsY1LSkCvmdEBlZub1OkBWGQEX8w/F6KOtok1SqlOW0sdANN4JP5A7WS4fcpTXh1Fe+HyKDwORkqHycvpU0="
+    - secure: "rsav5lbZB6Q4p4UcQ32FQgNBIfC4c1HM1q/u4a8Zuvw2mn7GoOAb8day76OfRamXHM5qfhoFc0wunytssRQfuK1qpQZDqCp1PP89FQY66p4F86N4jKkUb6kT2/dfuE2OJYYqllYHYr3qjN4calY+ARgtQkRTkgqqwKTZ+C/zhqhRxvTNxNc0yCdOB/1CR/pz0Hy2CeX+P6tNlAjYOtCBW4iuyRheu6nU+ciSZsXXBDyR85P9lIWqOF78CB6zo02b4kOXyVlCHMtdJkEuZvdHgIytxkTnKqdTcosz7F+F9rjvkz+Is13taT3YNpDwP8oCtKtPRAypi7MUyOn1DuJ3FEEKwgpIn+4ow1qoCBckJqhTKgXBmYHmtnDLi36IOssCo6diHQmIWG23u+VT0L1MWUtumdyBvKW5nQp/IDdP0a34FHwYW/rHiNVh/Eoiwsn5/wajhQGSlD0Sx3SkW3pfLXycI86tuznKlLblYXVgfWBChQQYObRcog9H4JafXqAe/02HMndapSedgGlj2fUEvhPntyNYRi0upqxEZfZCH3xE3M9t67SXA9yn0DnCDeSmHoN3vs7BHfPZI6gtHtIzbiPKCEMcRi9E6puFn75QcN0apY+EtvhphBvpA67rviHLP7T009kK27PGkcavo5CDzgY2eUMQ1+9bCLN2SIvOhP4="

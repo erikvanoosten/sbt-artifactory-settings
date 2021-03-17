@@ -9,7 +9,7 @@ Following you will find how to configure your laptop environment as well as the 
 ### Environment configuration
 
 When running Continuous integration in Travis there are some environment variables already provided that this plugin depends on:
-- `ARTIFACTORY_CONTEXT`: which value will be something like `https://artifactory.mpi-internal.com/artifactory`.
+- `ARTIFACTORY_CONTEXT`: its value will be something like `https://artifactory.mpi-internal.com/artifactory`.
 - `ARTIFACTORY_USER`: With your artifactory user, something like `name.surname@adevinta.com`.
 - `ARTIFACTORY_PWD`: The artifactory token
 
@@ -36,31 +36,15 @@ Given the typical project structure for a Scala application with [SBT](https://w
 
 You'll need to configure `project/plugins.sbt` and `build.sbt` as shown below:
 
-`project/plugins.sbt` is where the SBT plugins are specified. Given that we need a minimum setup for getting the plugins
- from artifactory, you will need to load some configuration from the environment variables like:
+`project/plugins.sbt` is where dependencies on SBT plugins are specified. Please make sure you add the following line:
 
 ```scala
-def getEnv(env: String): String = {
-  sys.env.getOrElse(env, {
-    println(s"Error: Please define the environment variable $env")
-    println("       More info at: https://github.mpi-internal.com/unicron/sbt-artifactory-settings")
-    sys.exit(-1)
-  })
-}
-val artifactoryContext = getEnv("ARTIFACTORY_CONTEXT")
-val artifactoryUser = getEnv("ARTIFACTORY_USER")
-val artifactoryPass = getEnv("ARTIFACTORY_PWD")
-resolvers += "Artifactory Release Plugins" at s"$artifactoryContext/libs-release"
-credentials += Credentials("Artifactory Realm", new URL(artifactoryContext).getAuthority, artifactoryUser, artifactoryPass)
-addSbtPlugin("com.adevinta.unicron" % "sbt-artifactory-settings" % "<version>")
-
-// the rest of the plugins are added here
+addSbtPlugin("com.github.adevinta.unicron" % "sbt-artifactory-settings" % "<version>")
 ```
 
 `build.sbt`:
 
-This is where the project build is configured. You will need to enable the artifactory plugin
- in the project containing the Scala code for Spark like:
+This is where the project build is configured. You will need to enable the artifactory plugin in the project containing the Scala code for Spark like:
 ```scala
 lazy val root = Project(id = "my-project", base = file("."))
   .enablePlugins(ArtifactorySettingsPlugin)
@@ -68,7 +52,7 @@ lazy val root = Project(id = "my-project", base = file("."))
 
 ## Settings
 
-This plugin provides several settings configured by default, but they can also be customised by the user:
+This plugin provides several settings configured by default, but they can also be customized by the user:
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |

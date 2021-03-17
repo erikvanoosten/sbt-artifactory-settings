@@ -1,65 +1,32 @@
 import sbt.ScriptedPlugin.autoImport.scriptedBufferLog
 
 inThisBuild(Seq(
-  scalaVersion := "2.12.10",
-  organization := "com.adevinta.unicron",
-  description := "SBT plugin to manage Artifactory configuration for Unicron",
-  sbtPlugin := true
+  
+  name := "sbt-artifactory-settings",
+  organization := "com.github.adevinta.unicron",
+  description := "SBT plugin to manage Artifactory configuration",
+  
+  licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
+  homepage := Some(url(s"https://github.com/adevinta/${name.value}")),
+  developers := List(Developer("cre-team", "CRE Team", "gp.gt.cre@adevinta.com", url("https://github.com/orgs/adevinta/teams/cre"))),
+  scmInfo := Some(ScmInfo(url(s"https://github.com/adevinta/${name.value}"), s"scm:git:git@github.com:adevinta/${name.value}.git")),
+
+  organizationName := "Adevinta",
+  startYear := Some(2021),
+
+  usePgpKeyHex("E362921A4CE8BD97916B06CEC6DDC7B1869C9349"),
+
+  dynverSonatypeSnapshots := true,
+
+  scalaVersion := "2.12.12",
+  sbtPlugin.withRank(KeyRanks.Invisible) := true,
 ))
 
-lazy val artifactorySettings = {
-  def getEnv(name: String): String = {
-    val value = System.getenv(name)
-    if (value == null) {
-      println("You are missing the environment variables needed to access Artifactory.")
-      println("Please follow this guide to configure your machine properly:")
-      println("\nhttps://docs.mpi-internal.com/unicron/docs-zeus-migration-guide/setup-laptop/\n")
-      sys.exit(-1)
-    }
-    value
-  }
-  val artifactoryContext = getEnv("ARTIFACTORY_CONTEXT")
-  val artifactoryUser = getEnv("ARTIFACTORY_USER")
-  val artifactoryPass = getEnv("ARTIFACTORY_PWD")
-
-  Seq(
-    resolvers := Seq("Artifactory Release Plugins" at s"$artifactoryContext/libs-release"),
-    credentials := Seq(Credentials("Artifactory Realm", new URL(artifactoryContext).getAuthority, artifactoryUser, artifactoryPass)),
-    publishTo := {
-      val repository = if (isSnapshot.value) "libs-snapshot-local;build.timestamp=" + java.time.Instant.now().toEpochMilli else "libs-release-local"
-      Some("Artifactory Realm for Publishing" at s"$artifactoryContext/$repository/")
-    },
-    dynverSonatypeSnapshots := true
-  )
-}
-
-lazy val bintraySettings = Seq(
-  publishMavenStyle := false,
-  bintrayOrganization := Some("adevinta-unicron"),
-  bintrayRepository := "sbt-plugins",
-  licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
-  dynverSonatypeSnapshots := false
-)
-
-val publishRepository = sys.props.get("publish.repository")
-
-val publishSettings = {
-  publishRepository
-    .filter(_.toLowerCase == "bintray")
-    .fold[Seq[Setting[_]]](artifactorySettings)(_ => bintraySettings)
-}
-
-val pluginsToDisable = {
-  publishRepository
-    .filter(_.toLowerCase == "bintray")
-    .fold[Seq[AutoPlugin]](Seq(BintrayPlugin))(_ => Seq.empty)
-}
-
 lazy val root = Project(id = "sbt-artifactory-settings", base = file("."))
-  .enablePlugins(SbtPlugin)
-  .disablePlugins(pluginsToDisable :_*)
-  .settings(publishSettings :_*)
+  .enablePlugins(SbtPlugin, AutomateHeaderPlugin)
   .settings(
+    sonatypeCredentialHost := "s01.oss.sonatype.org",
+    publishTo := sonatypePublishToBundle.value,
     scriptedBufferLog := false,
     scriptedLaunchOpts ++= Seq("-Xmx1024M", s"-Dplugin.version=${version.value}")
   )

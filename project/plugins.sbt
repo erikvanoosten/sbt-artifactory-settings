@@ -1,13 +1,8 @@
-val artifactoryContext = System.getenv("ARTIFACTORY_CONTEXT")
-val artifactoryUser = System.getenv("ARTIFACTORY_USER")
-val artifactoryPass = System.getenv("ARTIFACTORY_PWD")
-
-resolvers += "Artifactory Realm Release Libs" at s"$artifactoryContext/libs-release"
-credentials += Credentials("Artifactory Realm", new URL(artifactoryContext).getHost, artifactoryUser, artifactoryPass)
-
-addSbtPlugin("com.schibsted.mp" % "sbt-tricklerdowner" % "1.4.4")
-
-addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.6")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
-addSbtPlugin("com.dwijnand" % "sbt-dynver" % "4.0.0")
+
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.6.0")
+
+addSbtPlugin("com.dwijnand" % "sbt-dynver" % "4.1.1")
+addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.1.2")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.7")
