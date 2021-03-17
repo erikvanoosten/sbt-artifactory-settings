@@ -39,7 +39,7 @@ You'll need to configure `project/plugins.sbt` and `build.sbt` as shown below:
 `project/plugins.sbt` is where dependencies on SBT plugins are specified. Please make sure you add the following line:
 
 ```scala
-addSbtPlugin("com.github.adevinta.unicron" % "sbt-artifactory-settings" % "<version>")
+addSbtPlugin("com.github.adevinta" % "sbt-artifactory-settings" % "<version>")
 ```
 
 `build.sbt`:
