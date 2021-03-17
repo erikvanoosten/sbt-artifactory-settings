@@ -3,7 +3,7 @@ import sbt.ScriptedPlugin.autoImport.scriptedBufferLog
 inThisBuild(Seq(
   
   name := "sbt-artifactory-settings",
-  organization := "com.github.adevinta.unicron",
+  organization := "com.github.adevinta",
   description := "SBT plugin to manage Artifactory configuration",
   
   licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
