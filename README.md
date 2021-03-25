@@ -1,3 +1,6 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.adevinta/sbt-artifactory-settings/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.adevinta/sbt-artifactory-settings)
+[![Travis (.com)](https://img.shields.io/travis/com/adevinta/sbt-artifactory-settings)](https://travis-ci.com/github/adevinta/sbt-artifactory-settings/builds)
+
 # sbt-artifactory-settings
 
 SBT plugin to manage Artifactory configuration for Unicron
