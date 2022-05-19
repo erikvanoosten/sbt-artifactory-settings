@@ -77,8 +77,7 @@ object ArtifactorySettingsPlugin extends AutoPlugin {
       Seq(
         if (isSnapshot.value) Some(Resolver.mavenLocal) else None,
         Some("Artifactory Release Libs" at artifactoryJvmReleasesResolver.value),
-        if (isSnapshot.value) Some("Artifactory Snapshot Libs" at artifactoryJvmSnapshotsResolver.value) else None,
-        Some(Resolver.jcenterRepo)
+        if (isSnapshot.value) Some("Artifactory Snapshot Libs" at artifactoryJvmSnapshotsResolver.value) else None
       ).flatten
     },
 

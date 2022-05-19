@@ -59,8 +59,7 @@ lazy val root = (project in file("."))
         resolvers.value shouldBe Seq(
           Resolver.mavenLocal,
           "Artifactory Release Libs" at "https://host.com/path/libs-release/",
-          "Artifactory Snapshot Libs" at "https://host.com/path/libs-snapshot/",
-          Resolver.jcenterRepo
+          "Artifactory Snapshot Libs" at "https://host.com/path/libs-snapshot/"
         )
       }
 
