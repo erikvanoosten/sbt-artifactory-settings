@@ -53,6 +53,15 @@ lazy val root = Project(id = "my-project", base = file("."))
   .enablePlugins(ArtifactorySettingsPlugin)
 ```
 
+## Publishing to artifactory
+
+Include the following in your `build.sbt` to publish libraries to Adevinta's Artifactory:
+
+```
+ThisBuild / publishTo := Some("Artifactory publishing" at artifactoryJvmReleasesPublishResolver.value)
+ThisBuild / credentials ++= artifactoryCredentials.value
+```
+
 ## Settings
 
 This plugin provides several settings configured by default, but they can also be customized by the user:
