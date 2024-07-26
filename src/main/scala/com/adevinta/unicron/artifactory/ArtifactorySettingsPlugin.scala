@@ -24,6 +24,8 @@ object ArtifactorySettingsPlugin extends AutoPlugin {
 
   val autoImport: ArtifactoryKeys.type = ArtifactoryKeys
 
+  override def trigger = allRequirements
+
   override def buildSettings: Seq[Setting[_]] = Seq(
     artifactoryContextEnv := "ARTIFACTORY_CONTEXT",
     artifactoryUserEnv := "ARTIFACTORY_USER",
@@ -77,6 +79,7 @@ object ArtifactorySettingsPlugin extends AutoPlugin {
       Seq(
         if (isSnapshot.value) Some(Resolver.mavenLocal) else None,
         Some("Artifactory Release Libs" at artifactoryJvmReleasesResolver.value),
+        Some("Artifactory Release Libs Local" at artifactoryJvmReleasesPublishResolver.value),
         if (isSnapshot.value) Some("Artifactory Snapshot Libs" at artifactoryJvmSnapshotsResolver.value) else None
       ).flatten
     },
